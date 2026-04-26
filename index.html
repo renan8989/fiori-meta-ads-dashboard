@@ -361,6 +361,57 @@
       color: var(--green);
       margin-top: 2px;
     }
+    /* Analysis sections */
+    .analysis-section {
+      margin-bottom: 32px;
+    }
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .analysis-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.15s;
+    }
+    .analysis-card:hover { transform: translateY(-2px); }
+    .analysis-card.positive { border-left: 4px solid var(--green); }
+    .analysis-card.negative { border-left: 4px solid var(--red); }
+    .analysis-card.action  { border-left: 4px solid var(--accent); }
+    .analysis-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+    .analysis-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .analysis-body {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .analysis-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      width: fit-content;
+    }
+    .badge-green  { background: rgba(34,197,94,0.15);  color: #22c55e; }
+    .badge-red    { background: rgba(239,68,68,0.15);   color: #ef4444; }
+    .badge-blue   { background: rgba(79,110,247,0.15);  color: #4f6ef7; }
+    .badge-yellow { background: rgba(234,179,8,0.15);   color: #eab308; }
+    .badge-orange { background: rgba(249,115,22,0.15);  color: #f97316; }
+
     /* Metrics table */
     .table-card {
       background: var(--surface);
@@ -599,6 +650,24 @@
         <canvas id="chartCreativeBar"></canvas>
       </div>
     </div>
+  </div>
+
+  <!-- O que está funcionando -->
+  <p class="section-title">O que está funcionando &#x2014; Pontos Fortes</p>
+  <div class="analysis-section">
+    <div class="analysis-grid" id="strengths-grid"></div>
+  </div>
+
+  <!-- O que precisa de melhoria -->
+  <p class="section-title">O que precisa de melhoria</p>
+  <div class="analysis-section">
+    <div class="analysis-grid" id="weaknesses-grid"></div>
+  </div>
+
+  <!-- Próximos Passos -->
+  <p class="section-title">Próximos Passos &#x2014; Ações Recomendadas</p>
+  <div class="analysis-section">
+    <div class="analysis-grid" id="actions-grid"></div>
   </div>
 
   <!-- Funnel -->
@@ -1057,6 +1126,148 @@
         }
       }
     });
+
+    // Analysis sections — geradas dinamicamente com base nos dados reais
+    function makeCard(type, icon, title, badge, body) {
+      return `<div class="analysis-card ${type}">
+        <div class="analysis-icon">${icon}</div>
+        <div class="analysis-title">${title}</div>
+        <span class="analysis-badge ${badge.cls}">${badge.text}</span>
+        <div class="analysis-body">${body}</div>
+      </div>`;
+    }
+
+    const strengths = [];
+    const weaknesses = [];
+    const actions = [];
+
+    // --- PONTOS FORTES ---
+    // CPL abaixo de R$35 é bom para imóveis de alto padrão
+    if (c.cost_per_lead <= 35) {
+      strengths.push(makeCard('positive', '✅', 'Custo por Lead competitivo',
+        { cls: 'badge-green', text: 'R$ ' + c.cost_per_lead.toFixed(2) + ' / lead' },
+        'O CPL de <strong>R$ ' + c.cost_per_lead.toFixed(2) + '</strong> está dentro de uma faixa saudável para campanhas de imóveis de alto padrão. O criativo A2 está convertendo com eficiência.'
+      ));
+    }
+
+    // Criativo dominante gerando todos os leads
+    const topCreative = creatives.find(cr => cr.leads > 0);
+    if (topCreative) {
+      const topPct = (topCreative.spend / totalSpend * 100).toFixed(1);
+      strengths.push(makeCard('positive', '🎯', 'Criativo A2 altamente eficiente',
+        { cls: 'badge-green', text: '100% dos leads' },
+        'O criativo <strong>A2</strong> concentrou <strong>' + topPct + '%</strong> do orçamento e gerou <strong>todos os ' + c.leads + ' leads</strong> da campanha. O algoritmo do Meta identificou e priorizou o melhor criativo automaticamente.'
+      ));
+    }
+
+    // Público masculino com CPL muito baixo
+    const male = c.gender_breakdown.find(g => g.gender === 'male');
+    if (male && male.cost_per_lead < c.cost_per_lead) {
+      strengths.push(makeCard('positive', '👨', 'Público masculino com excelente CPL',
+        { cls: 'badge-green', text: 'R$ ' + male.cost_per_lead.toFixed(2) + ' / lead' },
+        'Homens representam <strong>' + male.leads + ' dos ' + c.leads + ' leads</strong> (81,3%) com custo por lead de apenas <strong>R$ ' + male.cost_per_lead.toFixed(2) + '</strong> — <strong>' + ((1 - male.cost_per_lead / c.cost_per_lead) * 100).toFixed(0) + '% abaixo</strong> da média geral da campanha.'
+      ));
+    }
+
+    // Faixa 35-44 como faixa dominante
+    const age3544 = c.age_breakdown.find(a => a.age === '35-44');
+    if (age3544 && age3544.leads > 0) {
+      const agePct = (age3544.leads / c.leads * 100).toFixed(0);
+      strengths.push(makeCard('positive', '📊', 'Faixa etária 35–44 anos bem definida',
+        { cls: 'badge-green', text: agePct + '% dos leads' },
+        'A faixa <strong>35–44 anos</strong> responde por <strong>' + agePct + '%</strong> dos leads com CTR de <strong>' + age3544.ctr_all.toFixed(2) + '%</strong>. O público-alvo está bem calibrado para o perfil de comprador do Oceana Golf.'
+      ));
+    }
+
+    // Facebook com CPL menor
+    const fb = c.platform_breakdown.find(p => p.platform === 'facebook');
+    const ig = c.platform_breakdown.find(p => p.platform === 'instagram');
+    if (fb && fb.cost_per_lead < ig.cost_per_lead) {
+      strengths.push(makeCard('positive', '📘', 'Facebook com menor custo por lead',
+        { cls: 'badge-green', text: 'R$ ' + fb.cost_per_lead.toFixed(2) + ' / lead' },
+        'Apesar de receber apenas <strong>' + (fb.spend / c.spend * 100).toFixed(1) + '%</strong> do orçamento, o Facebook gerou leads a <strong>R$ ' + fb.cost_per_lead.toFixed(2) + '</strong> — mais barato que o Instagram (R$ ' + ig.cost_per_lead.toFixed(2) + ').'
+      ));
+    }
+
+    // --- PONTOS DE MELHORIA ---
+    // Público feminino com CPL alto
+    const female = c.gender_breakdown.find(g => g.gender === 'female');
+    if (female && female.cost_per_lead > c.cost_per_lead * 1.5) {
+      weaknesses.push(makeCard('negative', '⚠️', 'Público feminino com CPL elevado',
+        { cls: 'badge-red', text: 'R$ ' + female.cost_per_lead.toFixed(2) + ' / lead' },
+        'Mulheres geraram apenas <strong>' + female.leads + ' leads</strong> a um custo de <strong>R$ ' + female.cost_per_lead.toFixed(2) + '</strong> por lead — <strong>' + ((female.cost_per_lead / c.cost_per_lead - 1) * 100).toFixed(0) + '% acima</strong> da média. O criativo atual pode não estar ressoando com esse público.'
+      ));
+    }
+
+    // Criativos A1, A3, A4, A5 sem leads
+    const noLeadCreatives = creatives.filter(cr => cr.leads === 0 && cr.spend > 0);
+    if (noLeadCreatives.length > 0) {
+      const noLeadSpend = noLeadCreatives.reduce((s, cr) => s + cr.spend, 0);
+      weaknesses.push(makeCard('negative', '🚫', noLeadCreatives.length + ' criativos sem nenhum lead',
+        { cls: 'badge-red', text: 'R$ ' + noLeadSpend.toFixed(2) + ' sem retorno' },
+        'Os criativos <strong>' + noLeadCreatives.map(cr => cr.ad_name).join(', ') + '</strong> consumiram <strong>R$ ' + noLeadSpend.toFixed(2) + '</strong> sem gerar um único lead. Esse orçamento poderia ter sido direcionado ao A2.'
+      ));
+    }
+
+    // Faixa 55-64 com investimento e zero leads
+    const age5564 = c.age_breakdown.find(a => a.age === '55-64');
+    if (age5564 && age5564.spend > 0 && age5564.leads === 0) {
+      weaknesses.push(makeCard('negative', '👴', 'Faixa 55–64 anos sem conversão',
+        { cls: 'badge-yellow', text: 'R$ ' + age5564.spend.toFixed(2) + ' sem leads' },
+        'A faixa <strong>55–64 anos</strong> recebeu <strong>R$ ' + age5564.spend.toFixed(2) + '</strong> de investimento com CTR baixo de <strong>' + age5564.ctr_all.toFixed(2) + '%</strong> e zero leads. Considerar excluir ou reduzir orçamento nessa faixa.'
+      ));
+    }
+
+    // Instagram com CPL maior que Facebook
+    if (ig && fb && ig.cost_per_lead > fb.cost_per_lead) {
+      weaknesses.push(makeCard('negative', '📸', 'Instagram com CPL mais alto que Facebook',
+        { cls: 'badge-yellow', text: 'R$ ' + ig.cost_per_lead.toFixed(2) + ' no Instagram' },
+        'O Instagram concentra <strong>' + (ig.spend / c.spend * 100).toFixed(1) + '%</strong> do orçamento mas entrega leads <strong>' + ((ig.cost_per_lead / fb.cost_per_lead - 1) * 100).toFixed(0) + '% mais caros</strong> que o Facebook. A distribuição de verba entre plataformas merece revisão.'
+      ));
+    }
+
+    // Frequência acima de 2 pode indicar saturação
+    if (c.frequency >= 2.0) {
+      weaknesses.push(makeCard('negative', '🔄', 'Frequência elevada — risco de saturação',
+        { cls: 'badge-yellow', text: 'Frequência: ' + c.frequency.toFixed(2) },
+        'A frequência média de <strong>' + c.frequency.toFixed(2) + '</strong> significa que cada Accounts Center account viu o anúncio mais de 2 vezes. Acima de 3, o público começa a ignorar — é hora de renovar criativos ou expandir o público.'
+      ));
+    }
+
+    // --- PRÓXIMOS PASSOS ---
+    actions.push(makeCard('action', '💰', 'Concentrar orçamento no criativo A2',
+      { cls: 'badge-blue', text: 'Alta prioridade' },
+      'O criativo A2 é o único que converte. Pausar definitivamente A1, A3, A4 e A5 e redirecionar 100% do orçamento para o A2 enquanto novos criativos não forem testados.'
+    ));
+
+    actions.push(makeCard('action', '📘', 'Aumentar verba no Facebook',
+      { cls: 'badge-blue', text: 'Oportunidade de escala' },
+      'O Facebook entrega leads a <strong>R$ ' + (fb ? fb.cost_per_lead.toFixed(2) : '—') + '</strong> — mais barato que o Instagram. Testar aumentar a proporção de orçamento no Facebook de ' + (fb ? (fb.spend / c.spend * 100).toFixed(0) : '—') + '% para 25–30% pode reduzir o CPL geral.'
+    ));
+
+    actions.push(makeCard('action', '👨', 'Criar variação de criativo focada no público feminino',
+      { cls: 'badge-orange', text: 'Teste A/B' },
+      'Com CPL de R$ ' + (female ? female.cost_per_lead.toFixed(2) : '—') + ' para mulheres, vale criar um criativo com linguagem e imagens direcionadas ao público feminino (ex: lifestyle, família, lazer) e testar separadamente.'
+    ));
+
+    actions.push(makeCard('action', '🎯', 'Focar segmentação em 35–54 anos',
+      { cls: 'badge-blue', text: 'Otimização de público' },
+      'As faixas <strong>35–44</strong> e <strong>45–54</strong> concentram <strong>' + (age3544 && c.age_breakdown.find(a=>a.age==='45-54') ? ((age3544.leads + c.age_breakdown.find(a=>a.age==='45-54').leads) / c.leads * 100).toFixed(0) : '—') + '%</strong> dos leads. Considerar restringir a segmentação de idade para 35–54 anos e reduzir desperdício nas faixas sem conversão.'
+    ));
+
+    actions.push(makeCard('action', '🖼️', 'Criar novos criativos antes da frequência atingir 3',
+      { cls: 'badge-yellow', text: 'Urgência média' },
+      'A frequência atual de <strong>' + c.frequency.toFixed(2) + '</strong> está se aproximando do limite de saturação. Preparar 2–3 novos criativos para substituição gradual e manter o desempenho sem queda de CTR.'
+    ));
+
+    actions.push(makeCard('action', '📊', 'Monitorar CPL semanalmente',
+      { cls: 'badge-blue', text: 'Acompanhamento' },
+      'Com esta dashboard atualizada toda segunda-feira, acompanhe a evolução do CPL semana a semana. Se ultrapassar R$ 40, revisar criativos e segmentação imediatamente.'
+    ));
+
+    document.getElementById('strengths-grid').innerHTML = strengths.join('');
+    document.getElementById('weaknesses-grid').innerHTML = weaknesses.join('');
+    document.getElementById('actions-grid').innerHTML = actions.join('');
 
     // Chart 2: Spend breakdown
     new Chart(document.getElementById('chartSpend'), {
