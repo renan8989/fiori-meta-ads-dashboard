@@ -91,6 +91,86 @@
           "cost_per_lead": 22.809129
         }
       ],
+      "age_breakdown": [
+        {
+          "age": "18-24",
+          "impressions": 0,
+          "reach": 0,
+          "frequency": 0,
+          "clicks_all": 0,
+          "link_clicks": 0,
+          "ctr_all": 0,
+          "spend": 0,
+          "cpm": 0,
+          "leads": 0,
+          "cost_per_lead": null
+        },
+        {
+          "age": "25-34",
+          "impressions": 5879,
+          "reach": 2728,
+          "frequency": 2.155059,
+          "clicks_all": 105,
+          "link_clicks": 73,
+          "ctr_all": 1.786018,
+          "spend": 166.16,
+          "cpm": 28.26331,
+          "leads": 7,
+          "cost_per_lead": 23.737143
+        },
+        {
+          "age": "35-44",
+          "impressions": 10238,
+          "reach": 4654,
+          "frequency": 2.199828,
+          "clicks_all": 248,
+          "link_clicks": 157,
+          "ctr_all": 2.422348,
+          "spend": 445.44,
+          "cpm": 43.508498,
+          "leads": 16,
+          "cost_per_lead": 27.84
+        },
+        {
+          "age": "45-54",
+          "impressions": 6400,
+          "reach": 3168,
+          "frequency": 2.020202,
+          "clicks_all": 143,
+          "link_clicks": 91,
+          "ctr_all": 2.234375,
+          "spend": 299.40,
+          "cpm": 46.78125,
+          "leads": 9,
+          "cost_per_lead": 33.266667
+        },
+        {
+          "age": "55-64",
+          "impressions": 693,
+          "reach": 324,
+          "frequency": 2.138889,
+          "clicks_all": 9,
+          "link_clicks": 7,
+          "ctr_all": 1.298701,
+          "spend": 40.10,
+          "cpm": 57.864358,
+          "leads": 0,
+          "cost_per_lead": null
+        },
+        {
+          "age": "65+",
+          "impressions": 0,
+          "reach": 0,
+          "frequency": 0,
+          "clicks_all": 0,
+          "link_clicks": 0,
+          "ctr_all": 0,
+          "spend": 0,
+          "cpm": 0,
+          "leads": 0,
+          "cost_per_lead": null
+        }
+      ],
       "creative_breakdown": [
         {
           "ad_id": "120245166124380671",

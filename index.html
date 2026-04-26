@@ -541,6 +541,15 @@
     </div>
   </div>
 
+  <!-- Age Breakdown -->
+  <p class="section-title">Distribuição por Faixa Etária</p>
+  <div class="chart-card" style="margin-bottom:32px">
+    <div class="chart-title">Leads e Investimento por Faixa Etária</div>
+    <div class="chart-wrap" style="height:300px">
+      <canvas id="chartAge"></canvas>
+    </div>
+  </div>
+
   <!-- Platform Breakdown -->
   <p class="section-title">Desempenho por Plataforma</p>
   <div class="charts-grid">
@@ -827,6 +836,74 @@
             grid: { drawOnChartArea: false },
             title: { display: true, text: 'CTR %', color: '#22c55e' },
             offset: true
+          }
+        }
+      }
+    });
+
+    // Chart: Age breakdown
+    const ages = c.age_breakdown;
+    const ageLabels = ages.map(a => a.age);
+    const ageLeads  = ages.map(a => a.leads);
+    const ageSpend  = ages.map(a => a.spend);
+    const ageBarColors = ['#4f6ef7','#7c3aed','#22c55e','#eab308','#ef4444'];
+
+    new Chart(document.getElementById('chartAge'), {
+      type: 'bar',
+      data: {
+        labels: ageLabels,
+        datasets: [
+          {
+            label: 'Leads',
+            data: ageLeads,
+            backgroundColor: ageBarColors.map(c => c + 'dd'),
+            borderColor: ageBarColors,
+            borderWidth: 2,
+            borderRadius: 8,
+            yAxisID: 'y',
+          },
+          {
+            label: 'Investimento (R$)',
+            data: ageSpend,
+            type: 'line',
+            borderColor: '#f97316',
+            backgroundColor: 'rgba(249,115,22,0.12)',
+            pointBackgroundColor: '#f97316',
+            pointRadius: 7,
+            pointHoverRadius: 9,
+            tension: 0.3,
+            yAxisID: 'y2',
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#94a3b8', font: { size: 12 } } },
+          tooltip: {
+            callbacks: {
+              afterBody: (ctx) => {
+                const idx = ctx[0].dataIndex;
+                const cpl = ages[idx].cost_per_lead;
+                return cpl ? ['Custo/Lead: R$ ' + Number(cpl).toFixed(2)] : ['Sem leads nesta faixa'];
+              }
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color: '#94a3b8', font: { size: 13 } }, grid: { color: '#2d3148' } },
+          y: {
+            type: 'linear', position: 'left',
+            ticks: { color: '#94a3b8', stepSize: 2 },
+            grid: { color: '#2d3148' },
+            title: { display: true, text: 'Leads', color: '#94a3b8' }
+          },
+          y2: {
+            type: 'linear', position: 'right',
+            ticks: { color: '#f97316', callback: v => 'R$ ' + v.toFixed(0) },
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: 'Investimento (R$)', color: '#f97316' }
           }
         }
       }
