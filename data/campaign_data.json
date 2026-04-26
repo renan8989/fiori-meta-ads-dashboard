@@ -4,7 +4,7 @@
     "name": "MICHEL - FIORI EMPREENDIMENTOS IMOBILIARIOS LTDA",
     "currency": "BRL"
   },
-  "last_updated": "2026-04-26T12:00:00-03:00",
+  "last_updated": "2026-04-26T15:00:00-03:00",
   "date_range": {
     "start": "2026-04-09",
     "end": "2026-04-26"
@@ -27,9 +27,6 @@
       "cpm": 40.935952,
       "leads": 32,
       "cost_per_lead": 29.440625,
-      "quality_ranking": "UNKNOWN",
-      "engagement_rate_ranking": "UNKNOWN",
-      "conversion_rate_ranking": "UNKNOWN",
       "gender_breakdown": [
         {
           "gender": "male",
@@ -62,6 +59,108 @@
           "cpm": 39.436051,
           "leads": 6,
           "cost_per_lead": 63.518333
+        }
+      ],
+      "platform_breakdown": [
+        {
+          "platform": "instagram",
+          "label": "Instagram",
+          "impressions": 19252,
+          "reach": 9029,
+          "frequency": 2.132241,
+          "clicks_all": 361,
+          "link_clicks": 273,
+          "ctr_all": 1.87513,
+          "spend": 810.685226,
+          "cpm": 42.109143,
+          "leads": 26,
+          "cost_per_lead": 31.180201
+        },
+        {
+          "platform": "facebook",
+          "label": "Facebook",
+          "impressions": 3866,
+          "reach": 2007,
+          "frequency": 1.926258,
+          "clicks_all": 144,
+          "link_clicks": 53,
+          "ctr_all": 3.72478,
+          "spend": 136.854774,
+          "cpm": 35.399579,
+          "leads": 6,
+          "cost_per_lead": 22.809129
+        }
+      ],
+      "creative_breakdown": [
+        {
+          "ad_id": "120245166124380671",
+          "ad_name": "A2",
+          "impressions": 19833,
+          "reach": 9222,
+          "clicks_all": 454,
+          "link_clicks": 287,
+          "ctr_all": 2.289114,
+          "spend": 890.48,
+          "cpm": 44.898906,
+          "leads": 32,
+          "cost_per_lead": 27.8275,
+          "status": "ACTIVE"
+        },
+        {
+          "ad_id": "120245166216440671",
+          "ad_name": "A3",
+          "impressions": 1316,
+          "reach": 1136,
+          "clicks_all": 20,
+          "link_clicks": 18,
+          "ctr_all": 1.519757,
+          "spend": 21.87,
+          "cpm": 16.618541,
+          "leads": 0,
+          "cost_per_lead": null,
+          "status": "PAUSED"
+        },
+        {
+          "ad_id": "120245166216430671",
+          "ad_name": "A4",
+          "impressions": 616,
+          "reach": 511,
+          "clicks_all": 10,
+          "link_clicks": 6,
+          "ctr_all": 1.623377,
+          "spend": 14.90,
+          "cpm": 24.188312,
+          "leads": 0,
+          "cost_per_lead": null,
+          "status": "ACTIVE"
+        },
+        {
+          "ad_id": "120245166216420671",
+          "ad_name": "A5",
+          "impressions": 866,
+          "reach": 766,
+          "clicks_all": 15,
+          "link_clicks": 11,
+          "ctr_all": 1.732102,
+          "spend": 13.85,
+          "cpm": 15.993072,
+          "leads": 0,
+          "cost_per_lead": null,
+          "status": "PAUSED"
+        },
+        {
+          "ad_id": "120245166214590671",
+          "ad_name": "A1",
+          "impressions": 487,
+          "reach": 435,
+          "clicks_all": 6,
+          "link_clicks": 4,
+          "ctr_all": 1.232033,
+          "spend": 6.44,
+          "cpm": 13.223819,
+          "leads": 0,
+          "cost_per_lead": null,
+          "status": "ACTIVE"
         }
       ]
     }

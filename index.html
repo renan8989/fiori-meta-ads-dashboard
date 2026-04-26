@@ -258,6 +258,56 @@
     .female-bar { background: linear-gradient(90deg, #ec4899, #f43f5e); }
     .gender-pct { font-size: 0.75rem; color: var(--muted); }
 
+    /* Platform table */
+    .platform-table-wrap {
+      margin-bottom: 32px;
+      overflow-x: auto;
+    }
+    .platform-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .platform-table th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 12px 16px;
+      text-align: left;
+    }
+    .platform-table td {
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+    .platform-table tr:hover td { background: var(--surface2); }
+    .platform-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    .platform-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    /* Creative grid */
+    .creative-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 600px) { .creative-grid { grid-template-columns: 1fr; } }
+
     /* Funnel */
     .funnel-card {
       background: var(--surface);
@@ -487,6 +537,57 @@
       <div class="chart-title">Comparativo por Gênero — Leads, Custo por Lead e CTR (todos)</div>
       <div class="chart-wrap" style="height:260px">
         <canvas id="chartGender"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Platform Breakdown -->
+  <p class="section-title">Desempenho por Plataforma</p>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Investimento por Plataforma (R$)</div>
+      <div class="chart-wrap" style="height:240px">
+        <canvas id="chartPlatformSpend"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Leads por Plataforma</div>
+      <div class="chart-wrap" style="height:240px">
+        <canvas id="chartPlatformLeads"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="platform-table-wrap">
+    <table class="platform-table">
+      <thead>
+        <tr>
+          <th>Plataforma</th>
+          <th>Impressões</th>
+          <th>Alcance</th>
+          <th>CTR (todos)</th>
+          <th>Investimento</th>
+          <th>CPM</th>
+          <th>Leads</th>
+          <th>Custo/Lead</th>
+        </tr>
+      </thead>
+      <tbody id="platform-table-body"></tbody>
+    </table>
+  </div>
+
+  <!-- Creative Budget Distribution -->
+  <p class="section-title">Distribuição de Orçamento por Criativo</p>
+  <div class="creative-grid">
+    <div class="chart-card">
+      <div class="chart-title">% do Investimento por Criativo</div>
+      <div class="chart-wrap" style="height:300px">
+        <canvas id="chartCreativePie"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Investimento vs. Leads por Criativo</div>
+      <div class="chart-wrap" style="height:300px">
+        <canvas id="chartCreativeBar"></canvas>
       </div>
     </div>
   </div>
@@ -726,6 +827,155 @@
             grid: { drawOnChartArea: false },
             title: { display: true, text: 'CTR %', color: '#22c55e' },
             offset: true
+          }
+        }
+      }
+    });
+
+    // Chart: Platform breakdown
+    const platforms = c.platform_breakdown;
+    const platColors = { instagram: '#e1306c', facebook: '#1877f2' };
+    const platLabels = platforms.map(p => p.label);
+    const platSpend  = platforms.map(p => p.spend);
+    const platLeads  = platforms.map(p => p.leads);
+    const platBgColors = platforms.map(p => platColors[p.platform] || '#4f6ef7');
+
+    new Chart(document.getElementById('chartPlatformSpend'), {
+      type: 'bar',
+      data: {
+        labels: platLabels,
+        datasets: [{
+          label: 'Investimento (R$)',
+          data: platSpend,
+          backgroundColor: platBgColors,
+          borderRadius: 8,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#2d3148' } },
+          y: { ticks: { color: '#94a3b8', callback: v => 'R$ ' + v.toFixed(0) }, grid: { color: '#2d3148' } }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('chartPlatformLeads'), {
+      type: 'bar',
+      data: {
+        labels: platLabels,
+        datasets: [{
+          label: 'Leads',
+          data: platLeads,
+          backgroundColor: platBgColors,
+          borderRadius: 8,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#2d3148' } },
+          y: { ticks: { color: '#94a3b8', stepSize: 5 }, grid: { color: '#2d3148' } }
+        }
+      }
+    });
+
+    // Platform table
+    document.getElementById('platform-table-body').innerHTML = platforms.map(p => {
+      const color = platColors[p.platform] || '#4f6ef7';
+      return `<tr>
+        <td><span class="platform-badge"><span class="platform-dot" style="background:${color}"></span>${p.label}</span></td>
+        <td>${fmt(p.impressions)}</td>
+        <td>${fmt(p.reach)}</td>
+        <td>${fmtPct(p.ctr_all)}</td>
+        <td>${fmtBRL(p.spend)}</td>
+        <td>${fmtBRL(p.cpm)}</td>
+        <td>${fmt(p.leads)}</td>
+        <td>${p.cost_per_lead ? fmtBRL(p.cost_per_lead) : '—'}</td>
+      </tr>`;
+    }).join('');
+
+    // Chart: Creative budget distribution (pizza)
+    const creatives = c.creative_breakdown;
+    const totalSpend = creatives.reduce((s, cr) => s + cr.spend, 0);
+    const creativeColors = ['#4f6ef7','#7c3aed','#22c55e','#eab308','#ef4444'];
+    const creativeLabels = creatives.map(cr => cr.ad_name);
+    const creativeSpend  = creatives.map(cr => cr.spend);
+    const creativeLeads  = creatives.map(cr => cr.leads);
+
+    new Chart(document.getElementById('chartCreativePie'), {
+      type: 'pie',
+      data: {
+        labels: creativeLabels,
+        datasets: [{
+          data: creativeSpend,
+          backgroundColor: creativeColors,
+          borderColor: '#1a1d27',
+          borderWidth: 3,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 12 }, padding: 16 } },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const val = ctx.parsed;
+                const pct = (val / totalSpend * 100).toFixed(1);
+                return ` ${ctx.label}: R$ ${val.toFixed(2)} (${pct}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('chartCreativeBar'), {
+      type: 'bar',
+      data: {
+        labels: creativeLabels,
+        datasets: [
+          {
+            label: 'Investimento (R$)',
+            data: creativeSpend,
+            backgroundColor: creativeColors.map(c => c + 'cc'),
+            borderColor: creativeColors,
+            borderWidth: 2,
+            borderRadius: 6,
+            yAxisID: 'y',
+          },
+          {
+            label: 'Leads',
+            data: creativeLeads,
+            type: 'line',
+            borderColor: '#22c55e',
+            backgroundColor: 'rgba(34,197,94,0.15)',
+            pointBackgroundColor: '#22c55e',
+            pointRadius: 6,
+            tension: 0.3,
+            yAxisID: 'y2',
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#2d3148' } },
+          y: {
+            type: 'linear', position: 'left',
+            ticks: { color: '#94a3b8', callback: v => 'R$ ' + v.toFixed(0) },
+            grid: { color: '#2d3148' },
+            title: { display: true, text: 'Investimento (R$)', color: '#94a3b8' }
+          },
+          y2: {
+            type: 'linear', position: 'right',
+            ticks: { color: '#22c55e', stepSize: 5 },
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: 'Leads', color: '#22c55e' }
           }
         }
       }
