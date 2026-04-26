@@ -29,7 +29,41 @@
       "cost_per_lead": 29.440625,
       "quality_ranking": "UNKNOWN",
       "engagement_rate_ranking": "UNKNOWN",
-      "conversion_rate_ranking": "UNKNOWN"
+      "conversion_rate_ranking": "UNKNOWN",
+      "gender_breakdown": [
+        {
+          "gender": "male",
+          "impressions": 13414,
+          "reach": 6531,
+          "frequency": 2.053897,
+          "clicks_all": 326,
+          "link_clicks": 200,
+          "ctr_all": 2.430297,
+          "link_click_ctr": 1.49098,
+          "spend": 565.47,
+          "cpc_all": 1.734571,
+          "cost_per_link_click": 2.82735,
+          "cpm": 42.155211,
+          "leads": 26,
+          "cost_per_lead": 21.748846
+        },
+        {
+          "gender": "female",
+          "impressions": 9664,
+          "reach": 4337,
+          "frequency": 2.228268,
+          "clicks_all": 178,
+          "link_clicks": 126,
+          "ctr_all": 1.841887,
+          "link_click_ctr": 1.303808,
+          "spend": 381.11,
+          "cpc_all": 2.141067,
+          "cost_per_link_click": 3.024683,
+          "cpm": 39.436051,
+          "leads": 6,
+          "cost_per_lead": 63.518333
+        }
+      ]
     }
   ]
 }

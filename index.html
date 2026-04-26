@@ -220,6 +220,44 @@
       position: relative;
       height: 220px;
     }
+    /* Gender */
+    .gender-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 600px) {
+      .gender-grid { grid-template-columns: 1fr; }
+      .gender-grid .chart-card { grid-column: span 1 !important; }
+    }
+    .gender-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .gender-card.male { border-top: 3px solid #4f6ef7; }
+    .gender-card.female { border-top: 3px solid #ec4899; }
+    .gender-icon { font-size: 2rem; margin-bottom: 6px; }
+    .gender-card.male .gender-icon { color: #4f6ef7; }
+    .gender-card.female .gender-icon { color: #ec4899; }
+    .gender-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 14px; }
+    .gender-leads { font-size: 2.4rem; font-weight: 700; color: var(--text); line-height: 1; }
+    .gender-leads-label { font-size: 0.7rem; color: var(--muted); margin-bottom: 12px; }
+    .gender-cpl { font-size: 1.2rem; font-weight: 600; }
+    .gender-card.male .gender-cpl { color: #4f6ef7; }
+    .gender-card.female .gender-cpl { color: #ec4899; }
+    .gender-cpl-label { font-size: 0.7rem; color: var(--muted); margin-bottom: 16px; }
+    .gender-bar-wrap { background: var(--surface2); border-radius: 6px; height: 8px; margin: 0 auto 8px; width: 100%; }
+    .gender-bar { height: 8px; border-radius: 6px; transition: width 0.8s ease; }
+    .male-bar { background: linear-gradient(90deg, #4f6ef7, #7c3aed); }
+    .female-bar { background: linear-gradient(90deg, #ec4899, #f43f5e); }
+    .gender-pct { font-size: 0.75rem; color: var(--muted); }
+
     /* Funnel */
     .funnel-card {
       background: var(--surface);
@@ -418,6 +456,41 @@
     </div>
   </div>
 
+  <!-- Gender Breakdown -->
+  <p class="section-title">Desempenho por Gênero</p>
+  <div class="gender-grid">
+    <div class="gender-card male">
+      <div class="gender-icon">♂</div>
+      <div class="gender-label">Masculino</div>
+      <div class="gender-leads" id="g-male-leads">—</div>
+      <div class="gender-leads-label">Leads</div>
+      <div class="gender-cpl" id="g-male-cpl">—</div>
+      <div class="gender-cpl-label">Custo por lead</div>
+      <div class="gender-bar-wrap">
+        <div class="gender-bar male-bar" id="g-male-bar"></div>
+      </div>
+      <div class="gender-pct" id="g-male-pct">—</div>
+    </div>
+    <div class="gender-card female">
+      <div class="gender-icon">♀</div>
+      <div class="gender-label">Feminino</div>
+      <div class="gender-leads" id="g-female-leads">—</div>
+      <div class="gender-leads-label">Leads</div>
+      <div class="gender-cpl" id="g-female-cpl">—</div>
+      <div class="gender-cpl-label">Custo por lead</div>
+      <div class="gender-bar-wrap">
+        <div class="gender-bar female-bar" id="g-female-bar"></div>
+      </div>
+      <div class="gender-pct" id="g-female-pct">—</div>
+    </div>
+    <div class="chart-card" style="grid-column: span 2;">
+      <div class="chart-title">Comparativo por Gênero — Leads, Custo por Lead e CTR (todos)</div>
+      <div class="chart-wrap" style="height:260px">
+        <canvas id="chartGender"></canvas>
+      </div>
+    </div>
+  </div>
+
   <!-- Funnel -->
   <p class="section-title">Funil de Conversão</p>
   <div class="funnel-card">
@@ -570,6 +643,89 @@
         plugins: {
           legend: {
             labels: { color: '#94a3b8', font: { size: 12 } }
+          }
+        }
+      }
+    });
+
+    // Chart 3: Gender breakdown
+    const gMale = c.gender_breakdown.find(g => g.gender === 'male');
+    const gFemale = c.gender_breakdown.find(g => g.gender === 'female');
+    const totalLeads = gMale.leads + gFemale.leads;
+
+    // Cards
+    document.getElementById('g-male-leads').textContent = fmt(gMale.leads);
+    document.getElementById('g-male-cpl').textContent = fmtBRL(gMale.cost_per_lead);
+    document.getElementById('g-female-leads').textContent = fmt(gFemale.leads);
+    document.getElementById('g-female-cpl').textContent = fmtBRL(gFemale.cost_per_lead);
+
+    const malePct = (gMale.leads / totalLeads * 100).toFixed(1);
+    const femalePct = (gFemale.leads / totalLeads * 100).toFixed(1);
+    document.getElementById('g-male-bar').style.width = malePct + '%';
+    document.getElementById('g-female-bar').style.width = femalePct + '%';
+    document.getElementById('g-male-pct').textContent = malePct + '% dos leads';
+    document.getElementById('g-female-pct').textContent = femalePct + '% dos leads';
+
+    new Chart(document.getElementById('chartGender'), {
+      type: 'bar',
+      data: {
+        labels: ['Masculino', 'Feminino'],
+        datasets: [
+          {
+            label: 'Leads',
+            data: [gMale.leads, gFemale.leads],
+            backgroundColor: ['#4f6ef7', '#ec4899'],
+            borderRadius: 6,
+            yAxisID: 'y',
+          },
+          {
+            label: 'Custo por Lead (R$)',
+            data: [gMale.cost_per_lead, gFemale.cost_per_lead],
+            backgroundColor: ['rgba(79,110,247,0.3)', 'rgba(236,72,153,0.3)'],
+            borderColor: ['#4f6ef7', '#ec4899'],
+            borderWidth: 2,
+            borderRadius: 6,
+            yAxisID: 'y2',
+          },
+          {
+            label: 'CTR (todos) %',
+            data: [gMale.ctr_all, gFemale.ctr_all],
+            type: 'line',
+            borderColor: '#22c55e',
+            backgroundColor: 'rgba(34,197,94,0.1)',
+            pointBackgroundColor: '#22c55e',
+            pointRadius: 6,
+            tension: 0.3,
+            yAxisID: 'y3',
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#94a3b8', font: { size: 12 } } }
+        },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#2d3148' } },
+          y: {
+            type: 'linear', position: 'left',
+            ticks: { color: '#94a3b8', stepSize: 5 },
+            grid: { color: '#2d3148' },
+            title: { display: true, text: 'Leads', color: '#94a3b8' }
+          },
+          y2: {
+            type: 'linear', position: 'right',
+            ticks: { color: '#94a3b8', callback: v => 'R$ ' + v.toFixed(0) },
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: 'Custo/Lead (R$)', color: '#94a3b8' }
+          },
+          y3: {
+            type: 'linear', position: 'right',
+            ticks: { color: '#22c55e', callback: v => v.toFixed(1) + '%' },
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: 'CTR %', color: '#22c55e' },
+            offset: true
           }
         }
       }
