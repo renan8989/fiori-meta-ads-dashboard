@@ -652,6 +652,49 @@
     </div>
   </div>
 
+  <!-- Evolução Semanal -->
+  <p class="section-title">Evolução Semanal</p>
+  <div class="chart-card" style="margin-bottom:16px">
+    <div class="chart-title">Leads e Custo por Lead por Semana</div>
+    <div class="chart-wrap" style="height:280px">
+      <canvas id="chartWeekly"></canvas>
+    </div>
+  </div>
+  <div class="table-card" style="margin-bottom:32px">
+    <table>
+      <thead>
+        <tr>
+          <th>Semana</th>
+          <th>Período</th>
+          <th>Leads</th>
+          <th>Investimento</th>
+          <th>CPL</th>
+          <th>Impressões</th>
+          <th>CTR</th>
+          <th>CPM</th>
+        </tr>
+      </thead>
+      <tbody id="weekly-table-body"></tbody>
+    </table>
+  </div>
+
+  <!-- Dispositivos -->
+  <p class="section-title">Desempenho por Dispositivo</p>
+  <div class="charts-grid" style="margin-bottom:32px">
+    <div class="chart-card">
+      <div class="chart-title">Leads por Dispositivo</div>
+      <div class="chart-wrap" style="height:260px">
+        <canvas id="chartDeviceLeads"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Investimento por Dispositivo (R$)</div>
+      <div class="chart-wrap" style="height:260px">
+        <canvas id="chartDeviceSpend"></canvas>
+      </div>
+    </div>
+  </div>
+
   <!-- O que está funcionando -->
   <p class="section-title">O que está funcionando &#x2014; Pontos Fortes</p>
   <div class="analysis-section">
@@ -724,6 +767,30 @@
   </div>
 
 </div>
+
+  <!-- Botão Exportar PDF -->
+  <div style="text-align:center; padding: 24px 0 40px 0;">
+    <button onclick="exportPDF()" style="
+      background: linear-gradient(135deg, #4f6ef7, #7c3aed);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 36px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(79,110,247,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    "
+    onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 28px rgba(79,110,247,0.5)'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(79,110,247,0.35)'">
+      📄 Exportar PDF
+    </button>
+    <p style="color:#64748b; font-size:0.78rem; margin-top:10px;">Gera um PDF da dashboard completa para impressão ou apresentação</p>
+  </div>
 
 <footer>
   Dashboard gerada automaticamente por <a href="https://manus.im" target="_blank">Manus</a> · 
@@ -1293,12 +1360,200 @@
         }
       }
     });
+
+    // Chart: Weekly evolution
+    const weeks = c.weekly_breakdown;
+    const weekLabels = weeks.map(w => w.week + '\n' + w.period);
+    const weekLeads  = weeks.map(w => w.leads);
+    const weekCPL    = weeks.map(w => w.cost_per_lead);
+    const weekSpend  = weeks.map(w => w.spend);
+
+    new Chart(document.getElementById('chartWeekly'), {
+      type: 'bar',
+      data: {
+        labels: weeks.map(w => [w.week, w.period]),
+        datasets: [
+          {
+            label: 'Leads',
+            data: weekLeads,
+            backgroundColor: ['#4f6ef7cc','#7c3aedcc','#22c55ecc'],
+            borderColor:     ['#4f6ef7','#7c3aed','#22c55e'],
+            borderWidth: 2,
+            borderRadius: 8,
+            yAxisID: 'y',
+          },
+          {
+            label: 'CPL (R$)',
+            data: weekCPL,
+            type: 'line',
+            borderColor: '#eab308',
+            backgroundColor: 'rgba(234,179,8,0.12)',
+            pointBackgroundColor: '#eab308',
+            pointRadius: 8,
+            pointHoverRadius: 10,
+            tension: 0.3,
+            yAxisID: 'y2',
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#94a3b8', font: { size: 12 } } },
+          tooltip: {
+            callbacks: {
+              afterBody: (ctx) => {
+                const idx = ctx[0].dataIndex;
+                return ['Investimento: R$ ' + weeks[idx].spend.toFixed(2)];
+              }
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { color: '#2d3148' } },
+          y: {
+            type: 'linear', position: 'left',
+            ticks: { color: '#94a3b8', stepSize: 5 },
+            grid: { color: '#2d3148' },
+            title: { display: true, text: 'Leads', color: '#94a3b8' }
+          },
+          y2: {
+            type: 'linear', position: 'right',
+            ticks: { color: '#eab308', callback: v => 'R$ ' + v.toFixed(0) },
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: 'CPL (R$)', color: '#eab308' }
+          }
+        }
+      }
+    });
+
+    // Weekly table
+    document.getElementById('weekly-table-body').innerHTML = weeks.map(w => `
+      <tr>
+        <td><strong>${w.week}</strong></td>
+        <td style="color:var(--muted);font-size:0.8rem">${w.period}</td>
+        <td><strong style="color:var(--accent)">${w.leads}</strong></td>
+        <td>${fmtBRL(w.spend)}</td>
+        <td>${fmtBRL(w.cost_per_lead)}</td>
+        <td>${fmt(w.impressions)}</td>
+        <td>${fmtPct(w.ctr_all)}</td>
+        <td>${fmtBRL(w.cpm)}</td>
+      </tr>
+    `).join('');
+
+    // Chart: Device breakdown
+    const devices = c.device_breakdown;
+    const devColors = ['#4f6ef7','#22c55e','#94a3b8','#eab308','#f97316'];
+    const devLabels = devices.map(d => d.label);
+    const devLeads  = devices.map(d => d.leads);
+    const devSpend  = devices.map(d => d.spend);
+
+    new Chart(document.getElementById('chartDeviceLeads'), {
+      type: 'doughnut',
+      data: {
+        labels: devLabels,
+        datasets: [{
+          data: devLeads,
+          backgroundColor: devColors,
+          borderColor: '#1a1d27',
+          borderWidth: 3,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 12 }, padding: 14 } },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const total = devLeads.reduce((a,b)=>a+b,0);
+                const pct = total > 0 ? (ctx.parsed / total * 100).toFixed(1) : 0;
+                return ` ${ctx.label}: ${ctx.parsed} leads (${pct}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('chartDeviceSpend'), {
+      type: 'bar',
+      data: {
+        labels: devLabels,
+        datasets: [{
+          label: 'Investimento (R$)',
+          data: devSpend,
+          backgroundColor: devColors.map(c => c + 'cc'),
+          borderColor: devColors,
+          borderWidth: 2,
+          borderRadius: 8,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { color: '#2d3148' } },
+          y: { ticks: { color: '#94a3b8', callback: v => 'R$ ' + v.toFixed(0) }, grid: { color: '#2d3148' } }
+        }
+      }
+    });
   }
 
   function formatDate(d) {
     const [y, m, day] = d.split('-');
     return `${day}/${m}/${y}`;
   }
+
+  function exportPDF() {
+    const btn = document.querySelector('button[onclick="exportPDF()"]');
+    btn.textContent = '⏳ Gerando PDF...';
+    btn.disabled = true;
+    window.print();
+    setTimeout(() => {
+      btn.innerHTML = '📄 Exportar PDF';
+      btn.disabled = false;
+    }, 2000);
+  }
 </script>
+
+<style>
+  @media print {
+    @page { size: A4; margin: 12mm; }
+    body { background: #fff !important; color: #111 !important; font-size: 11px; }
+    header { background: #f8fafc !important; border-bottom: 2px solid #e2e8f0 !important; padding: 12px 20px !important; }
+    .logo-text h1 { color: #1e293b !important; font-size: 1.1rem !important; }
+    .logo-text p  { color: #475569 !important; }
+    .live-badge, footer, button, .section-title + .analysis-section .analysis-card:hover { display: none !important; }
+    .kpi-grid, .charts-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    .chart-card, .kpi-card, .funnel-card, .table-card, .analysis-card {
+      background: #f8fafc !important;
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: none !important;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .analysis-card.positive { border-left: 4px solid #16a34a !important; }
+    .analysis-card.negative { border-left: 4px solid #dc2626 !important; }
+    .analysis-card.action   { border-left: 4px solid #2563eb !important; }
+    .analysis-title, .kpi-value, .funnel-step-value { color: #1e293b !important; }
+    .analysis-body, .kpi-label, .kpi-desc, .muted, .section-title { color: #475569 !important; }
+    .section-title { color: #1e293b !important; border-color: #e2e8f0 !important; }
+    canvas { max-height: 200px !important; }
+    .chart-wrap { height: 180px !important; }
+    th { color: #475569 !important; }
+    td { color: #1e293b !important; }
+    tr:nth-child(even) td { background: #f1f5f9 !important; }
+    .badge-green  { background: #dcfce7 !important; color: #16a34a !important; }
+    .badge-red    { background: #fee2e2 !important; color: #dc2626 !important; }
+    .badge-blue   { background: #dbeafe !important; color: #2563eb !important; }
+    .badge-yellow { background: #fef9c3 !important; color: #ca8a04 !important; }
+    .badge-orange { background: #ffedd5 !important; color: #ea580c !important; }
+    .funnel-step  { background: #f1f5f9 !important; border-color: #e2e8f0 !important; }
+    .funnel-rate  { color: #16a34a !important; }
+    .gender-bar.male-bar   { background: linear-gradient(90deg, #2563eb, #60a5fa) !important; }
+    .gender-bar.female-bar { background: linear-gradient(90deg, #db2777, #f472b6) !important; }
+  }
+</style>
 </body>
 </html>

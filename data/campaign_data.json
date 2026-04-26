@@ -171,6 +171,109 @@
           "cost_per_lead": null
         }
       ],
+      "weekly_breakdown": [
+        {
+          "week": "Semana 1",
+          "period": "09/04 – 15/04",
+          "impressions": 9449,
+          "reach": 5754,
+          "clicks_all": 213,
+          "link_clicks": 140,
+          "ctr_all": 2.254207,
+          "spend": 359.18,
+          "cpm": 38.012488,
+          "leads": 10,
+          "cost_per_lead": 35.918
+        },
+        {
+          "week": "Semana 2",
+          "period": "16/04 – 22/04",
+          "impressions": 9845,
+          "reach": 5508,
+          "clicks_all": 210,
+          "link_clicks": 138,
+          "ctr_all": 2.133062,
+          "spend": 408.23,
+          "cpm": 41.465719,
+          "leads": 17,
+          "cost_per_lead": 24.013529
+        },
+        {
+          "week": "Semana 3 (parcial)",
+          "period": "23/04 – 26/04",
+          "impressions": 3944,
+          "reach": 2818,
+          "clicks_all": 82,
+          "link_clicks": 50,
+          "ctr_all": 2.079108,
+          "spend": 185.22,
+          "cpm": 46.962475,
+          "leads": 5,
+          "cost_per_lead": 37.044
+        }
+      ],
+      "device_breakdown": [
+        {
+          "device": "iphone",
+          "label": "iPhone",
+          "impressions": 10513,
+          "reach": 4814,
+          "clicks_all": 262,
+          "link_clicks": 153,
+          "spend": 571.898094,
+          "cpm": 54.399134,
+          "leads": 23,
+          "cost_per_lead": 24.865135
+        },
+        {
+          "device": "android_smartphone",
+          "label": "Android",
+          "impressions": 12630,
+          "reach": 5897,
+          "clicks_all": 241,
+          "link_clicks": 174,
+          "spend": 374.770154,
+          "cpm": 29.673013,
+          "leads": 9,
+          "cost_per_lead": 41.641128
+        },
+        {
+          "device": "desktop",
+          "label": "Desktop",
+          "impressions": 37,
+          "reach": 20,
+          "clicks_all": 1,
+          "link_clicks": 0,
+          "spend": 5.071491,
+          "cpm": 137.067314,
+          "leads": 0,
+          "cost_per_lead": null
+        },
+        {
+          "device": "ipad",
+          "label": "iPad",
+          "impressions": 24,
+          "reach": 17,
+          "clicks_all": 0,
+          "link_clicks": 0,
+          "spend": 0.470138,
+          "cpm": 19.589091,
+          "leads": 0,
+          "cost_per_lead": null
+        },
+        {
+          "device": "android_tablet",
+          "label": "Android Tablet",
+          "impressions": 30,
+          "reach": 20,
+          "clicks_all": 1,
+          "link_clicks": 1,
+          "spend": 0.380112,
+          "cpm": 12.670391,
+          "leads": 0,
+          "cost_per_lead": null
+        }
+      ],
       "creative_breakdown": [
         {
           "ad_id": "120245166124380671",
