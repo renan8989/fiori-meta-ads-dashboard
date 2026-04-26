@@ -36,7 +36,18 @@
       flex-wrap: wrap;
       gap: 16px;
     }
-    .logo-area h1 {
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .logo-area img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+    }
+    .logo-text h1 {
       font-size: 1.5rem;
       font-weight: 700;
       background: linear-gradient(90deg, #4f6ef7, #7c3aed);
@@ -44,7 +55,7 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .logo-area p {
+    .logo-text p {
       color: var(--muted);
       font-size: 0.85rem;
       margin-top: 4px;
@@ -319,8 +330,11 @@
 
 <header>
   <div class="logo-area">
-    <h1>FIORI — Meta Ads Dashboard</h1>
-    <p>FIORI EMPREENDIMENTOS IMOBILIÁRIOS LTDA · Conta: act_1453008295739427</p>
+    <img src="logo.png" alt="Blue Door" />
+    <div class="logo-text">
+      <h1>FIORI — Meta Ads Dashboard</h1>
+      <p>FIORI EMPREENDIMENTOS IMOBILIÁRIOS LTDA · Conta: act_1453008295739427</p>
+    </div>
   </div>
   <div class="header-meta">
     <div class="badge-live">AO VIVO</div>
