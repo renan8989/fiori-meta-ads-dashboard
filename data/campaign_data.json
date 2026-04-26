@@ -1,0 +1,35 @@
+{
+  "account": {
+    "id": "act_1453008295739427",
+    "name": "MICHEL - FIORI EMPREENDIMENTOS IMOBILIARIOS LTDA",
+    "currency": "BRL"
+  },
+  "last_updated": "2026-04-26T12:00:00-03:00",
+  "date_range": {
+    "start": "2026-04-09",
+    "end": "2026-04-26"
+  },
+  "campaigns": [
+    {
+      "id": "120245166124370671",
+      "name": "AX A562479 - NOVAS IMAGENS PRÓPRIAS OCEANA GOLF - BARRA - PDS - SOLUNA",
+      "status": "ACTIVE",
+      "impressions": 23014,
+      "reach": 10731,
+      "frequency": 2.144628,
+      "clicks_all": 501,
+      "link_clicks": 324,
+      "ctr_all": 2.176936,
+      "link_click_ctr": 1.407839,
+      "spend": 942.10,
+      "cpc_all": 1.880439,
+      "cost_per_link_click": 2.907716,
+      "cpm": 40.935952,
+      "leads": 32,
+      "cost_per_lead": 29.440625,
+      "quality_ranking": "UNKNOWN",
+      "engagement_rate_ranking": "UNKNOWN",
+      "conversion_rate_ranking": "UNKNOWN"
+    }
+  ]
+}

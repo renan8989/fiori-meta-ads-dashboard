@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Meta Ads — FIORI Empreendimentos</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --accent: #4f6ef7;
+      --accent2: #7c3aed;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: #2d3148;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(135deg, #1a1d27 0%, #22263a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .logo-area h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #4f6ef7, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .logo-area p {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+    .header-meta {
+      text-align: right;
+    }
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.4);
+      color: var(--green);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .badge-live::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .update-info {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    /* Campaign badge */
+    .campaign-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--green);
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 1.5s infinite;
+    }
+    .campaign-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+    .campaign-period {
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: var(--surface2);
+      padding: 4px 12px;
+      border-radius: 8px;
+    }
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .kpi-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .kpi-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+    .kpi-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .kpi-card.highlight::before {
+      background: linear-gradient(90deg, var(--green), #16a34a);
+    }
+    .kpi-card.highlight .kpi-value {
+      color: var(--green);
+    }
+    .kpi-card.warn::before {
+      background: linear-gradient(90deg, var(--yellow), #ca8a04);
+    }
+    /* Charts */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 768px) {
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .chart-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .chart-wrap {
+      position: relative;
+      height: 220px;
+    }
+    /* Funnel */
+    .funnel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .funnel-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .funnel-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+    .funnel-step {
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+      padding: 16px 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    .funnel-step:first-child { border-radius: 10px 0 0 10px; }
+    .funnel-step:last-child { border-radius: 0 10px 10px 0; }
+    .funnel-step-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .funnel-step-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .funnel-arrow {
+      font-size: 1.2rem;
+      color: var(--border);
+      padding: 0 4px;
+    }
+    .funnel-rate {
+      font-size: 0.65rem;
+      color: var(--green);
+      margin-top: 2px;
+    }
+    /* Metrics table */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      border-bottom: 1px solid rgba(45,49,72,0.5);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(79,110,247,0.05); }
+    .metric-name { color: var(--muted); font-size: 0.78rem; }
+    .metric-val { font-weight: 600; }
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 32px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .disclaimer {
+      background: rgba(79,110,247,0.08);
+      border: 1px solid rgba(79,110,247,0.2);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-area">
+    <h1>FIORI — Meta Ads Dashboard</h1>
+    <p>FIORI EMPREENDIMENTOS IMOBILIÁRIOS LTDA · Conta: act_1453008295739427</p>
+  </div>
+  <div class="header-meta">
+    <div class="badge-live">AO VIVO</div>
+    <div class="update-info" id="update-time">Última atualização: carregando...</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="disclaimer">
+    Os dados desta dashboard são parciais e estão sujeitos a alterações, pois o período inclui o dia de hoje. Atualização automática diária via GitHub Actions.
+  </div>
+
+  <!-- Campaign Header -->
+  <p class="section-title">Campanha Ativa</p>
+  <div class="campaign-header">
+    <div class="status-dot"></div>
+    <div class="campaign-name" id="camp-name">Carregando...</div>
+    <div class="campaign-period" id="camp-period">—</div>
+  </div>
+
+  <!-- KPI Cards -->
+  <p class="section-title">Indicadores Principais</p>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Impressões</div>
+      <div class="kpi-value" id="kpi-impressions">—</div>
+      <div class="kpi-sub">Exibições do anúncio</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Alcance</div>
+      <div class="kpi-value" id="kpi-reach">—</div>
+      <div class="kpi-sub">Accounts Center accounts</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Frequência</div>
+      <div class="kpi-value" id="kpi-frequency">—</div>
+      <div class="kpi-sub">Visualizações por conta</div>
+    </div>
+    <div class="kpi-card highlight">
+      <div class="kpi-label">Leads</div>
+      <div class="kpi-value" id="kpi-leads">—</div>
+      <div class="kpi-sub">Cadastros gerados</div>
+    </div>
+    <div class="kpi-card warn">
+      <div class="kpi-label">Valor Usado</div>
+      <div class="kpi-value" id="kpi-spend">—</div>
+      <div class="kpi-sub">Investimento total (BRL)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Custo por Lead</div>
+      <div class="kpi-value" id="kpi-cpl">—</div>
+      <div class="kpi-sub">Por cadastro (BRL)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">CPM</div>
+      <div class="kpi-value" id="kpi-cpm">—</div>
+      <div class="kpi-sub">Custo por 1.000 impressões</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">CTR (todos)</div>
+      <div class="kpi-value" id="kpi-ctr">—</div>
+      <div class="kpi-sub">Taxa de cliques</div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <p class="section-title">Distribuição de Métricas</p>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Cliques (todos) vs. Link clicks</div>
+      <div class="chart-wrap">
+        <canvas id="chartClicks"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Distribuição do Investimento</div>
+      <div class="chart-wrap">
+        <canvas id="chartSpend"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Funnel -->
+  <p class="section-title">Funil de Conversão</p>
+  <div class="funnel-card">
+    <div class="funnel-title">Da impressão ao lead</div>
+    <div class="funnel-steps">
+      <div class="funnel-step">
+        <div class="funnel-step-value" id="f-impressions">—</div>
+        <div class="funnel-step-label">Impressões</div>
+      </div>
+      <div class="funnel-arrow">›</div>
+      <div class="funnel-step">
+        <div class="funnel-step-value" id="f-reach">—</div>
+        <div class="funnel-step-label">Alcance</div>
+        <div class="funnel-rate" id="f-reach-rate">—</div>
+      </div>
+      <div class="funnel-arrow">›</div>
+      <div class="funnel-step">
+        <div class="funnel-step-value" id="f-clicks">—</div>
+        <div class="funnel-step-label">Cliques (todos)</div>
+        <div class="funnel-rate" id="f-clicks-rate">—</div>
+      </div>
+      <div class="funnel-arrow">›</div>
+      <div class="funnel-step">
+        <div class="funnel-step-value" id="f-link-clicks">—</div>
+        <div class="funnel-step-label">Link clicks</div>
+        <div class="funnel-rate" id="f-link-rate">—</div>
+      </div>
+      <div class="funnel-arrow">›</div>
+      <div class="funnel-step">
+        <div class="funnel-step-value" id="f-leads">—</div>
+        <div class="funnel-step-label">Leads</div>
+        <div class="funnel-rate" id="f-leads-rate">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Metrics Table -->
+  <p class="section-title">Métricas Detalhadas</p>
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Métrica</th>
+          <th>Valor</th>
+          <th>Definição</th>
+        </tr>
+      </thead>
+      <tbody id="metrics-table">
+        <tr><td colspan="3" style="text-align:center;color:var(--muted)">Carregando dados...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  Dashboard gerada automaticamente por <a href="https://manus.im" target="_blank">Manus</a> · 
+  Dados via Meta Ads API · 
+  Repositório: <a href="https://github.com/renan8989/fiori-meta-ads-dashboard" target="_blank">renan8989/fiori-meta-ads-dashboard</a>
+  <br>
+  Terminologia conforme padrões oficiais Meta Ads. "Reach" refere-se a Accounts Center accounts.
+</footer>
+
+<script>
+  // Carregar dados do JSON
+  fetch('data/campaign_data.json?v=' + Date.now())
+    .then(r => r.json())
+    .then(data => renderDashboard(data))
+    .catch(() => {
+      document.getElementById('update-time').textContent = 'Erro ao carregar dados';
+    });
+
+  function fmt(n, decimals = 0) {
+    return Number(n).toLocaleString('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  }
+  function fmtBRL(n) {
+    return 'R$ ' + Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function fmtPct(n) {
+    return Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+  }
+
+  function renderDashboard(data) {
+    const c = data.campaigns[0];
+    const updated = new Date(data.last_updated);
+    document.getElementById('update-time').textContent =
+      'Última atualização: ' + updated.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+
+    // Campaign header
+    document.getElementById('camp-name').textContent = c.name;
+    document.getElementById('camp-period').textContent =
+      formatDate(data.date_range.start) + ' — ' + formatDate(data.date_range.end);
+
+    // KPIs
+    document.getElementById('kpi-impressions').textContent = fmt(c.impressions);
+    document.getElementById('kpi-reach').textContent = fmt(c.reach);
+    document.getElementById('kpi-frequency').textContent = fmt(c.frequency, 2);
+    document.getElementById('kpi-leads').textContent = fmt(c.leads);
+    document.getElementById('kpi-spend').textContent = fmtBRL(c.spend);
+    document.getElementById('kpi-cpl').textContent = fmtBRL(c.cost_per_lead);
+    document.getElementById('kpi-cpm').textContent = fmtBRL(c.cpm);
+    document.getElementById('kpi-ctr').textContent = fmtPct(c.ctr_all);
+
+    // Funnel
+    document.getElementById('f-impressions').textContent = fmt(c.impressions);
+    document.getElementById('f-reach').textContent = fmt(c.reach);
+    document.getElementById('f-reach-rate').textContent = fmtPct(c.reach / c.impressions * 100);
+    document.getElementById('f-clicks').textContent = fmt(c.clicks_all);
+    document.getElementById('f-clicks-rate').textContent = 'CTR ' + fmtPct(c.ctr_all);
+    document.getElementById('f-link-clicks').textContent = fmt(c.link_clicks);
+    document.getElementById('f-link-rate').textContent = fmtPct(c.link_click_ctr);
+    document.getElementById('f-leads').textContent = fmt(c.leads);
+    document.getElementById('f-leads-rate').textContent = fmtPct(c.leads / c.link_clicks * 100);
+
+    // Detailed table
+    const rows = [
+      ['Impressões', fmt(c.impressions), 'Número de vezes que o anúncio foi exibido na tela'],
+      ['Alcance', fmt(c.reach), 'Accounts Center accounts que viram o anúncio pelo menos uma vez'],
+      ['Frequência', fmt(c.frequency, 2), 'Média de visualizações por Accounts Center account'],
+      ['Cliques (todos)', fmt(c.clicks_all), 'Cliques, toques ou deslizamentos no anúncio'],
+      ['Link clicks', fmt(c.link_clicks), 'Cliques em links que levaram a destinos do anunciante'],
+      ['CTR (todos)', fmtPct(c.ctr_all), 'Porcentagem de impressões com clique (todos)'],
+      ['CTR Link clicks', fmtPct(c.link_click_ctr), 'Porcentagem de impressões com link click'],
+      ['Valor usado', fmtBRL(c.spend), 'Investimento total estimado no período'],
+      ['CPM', fmtBRL(c.cpm), 'Custo médio por 1.000 impressões'],
+      ['CPC (todos)', fmtBRL(c.cpc_all), 'Custo médio por clique (todos)'],
+      ['Custo por link click', fmtBRL(c.cost_per_link_click), 'Custo médio por link click'],
+      ['Leads', fmt(c.leads), 'Cadastros gerados pela campanha'],
+      ['Custo por lead', fmtBRL(c.cost_per_lead), 'Custo médio por lead gerado'],
+    ];
+    document.getElementById('metrics-table').innerHTML = rows.map(([m, v, d]) =>
+      `<tr><td class="metric-name">${m}</td><td class="metric-val">${v}</td><td style="color:var(--muted);font-size:0.78rem">${d}</td></tr>`
+    ).join('');
+
+    // Chart 1: Cliques
+    new Chart(document.getElementById('chartClicks'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Cliques (todos)', 'Link clicks'],
+        datasets: [{
+          data: [c.clicks_all, c.link_clicks],
+          backgroundColor: ['#4f6ef7', '#7c3aed'],
+          borderColor: '#1a1d27',
+          borderWidth: 3,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: '#94a3b8', font: { size: 12 } }
+          }
+        }
+      }
+    });
+
+    // Chart 2: Spend breakdown
+    new Chart(document.getElementById('chartSpend'), {
+      type: 'bar',
+      data: {
+        labels: ['CPM (R$)', 'CPC (todos) (R$)', 'Custo/Link click (R$)', 'Custo/Lead (R$)'],
+        datasets: [{
+          label: 'Valor (R$)',
+          data: [c.cpm, c.cpc_all, c.cost_per_link_click, c.cost_per_lead],
+          backgroundColor: ['#4f6ef7', '#7c3aed', '#22c55e', '#eab308'],
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#2d3148' } },
+          y: { ticks: { color: '#94a3b8', font: { size: 10 }, callback: v => 'R$ ' + v.toFixed(2) }, grid: { color: '#2d3148' } }
+        }
+      }
+    });
+  }
+
+  function formatDate(d) {
+    const [y, m, day] = d.split('-');
+    return `${day}/${m}/${y}`;
+  }
+</script>
+</body>
+</html>
