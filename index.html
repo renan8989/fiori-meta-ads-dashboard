@@ -678,22 +678,6 @@
     </table>
   </div>
 
-  <!-- Dispositivos -->
-  <p class="section-title">Desempenho por Dispositivo</p>
-  <div class="charts-grid" style="margin-bottom:32px">
-    <div class="chart-card">
-      <div class="chart-title">Leads por Dispositivo</div>
-      <div class="chart-wrap" style="height:260px">
-        <canvas id="chartDeviceLeads"></canvas>
-      </div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Investimento por Dispositivo (R$)</div>
-      <div class="chart-wrap" style="height:260px">
-        <canvas id="chartDeviceSpend"></canvas>
-      </div>
-    </div>
-  </div>
 
   <!-- O que está funcionando -->
   <p class="section-title">O que está funcionando &#x2014; Pontos Fortes</p>
@@ -1441,63 +1425,6 @@
       </tr>
     `).join('');
 
-    // Chart: Device breakdown
-    const devices = c.device_breakdown;
-    const devColors = ['#4f6ef7','#22c55e','#94a3b8','#eab308','#f97316'];
-    const devLabels = devices.map(d => d.label);
-    const devLeads  = devices.map(d => d.leads);
-    const devSpend  = devices.map(d => d.spend);
-
-    new Chart(document.getElementById('chartDeviceLeads'), {
-      type: 'doughnut',
-      data: {
-        labels: devLabels,
-        datasets: [{
-          data: devLeads,
-          backgroundColor: devColors,
-          borderColor: '#1a1d27',
-          borderWidth: 3,
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 12 }, padding: 14 } },
-          tooltip: {
-            callbacks: {
-              label: ctx => {
-                const total = devLeads.reduce((a,b)=>a+b,0);
-                const pct = total > 0 ? (ctx.parsed / total * 100).toFixed(1) : 0;
-                return ` ${ctx.label}: ${ctx.parsed} leads (${pct}%)`;
-              }
-            }
-          }
-        }
-      }
-    });
-
-    new Chart(document.getElementById('chartDeviceSpend'), {
-      type: 'bar',
-      data: {
-        labels: devLabels,
-        datasets: [{
-          label: 'Investimento (R$)',
-          data: devSpend,
-          backgroundColor: devColors.map(c => c + 'cc'),
-          borderColor: devColors,
-          borderWidth: 2,
-          borderRadius: 8,
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { color: '#2d3148' } },
-          y: { ticks: { color: '#94a3b8', callback: v => 'R$ ' + v.toFixed(0) }, grid: { color: '#2d3148' } }
-        }
-      }
-    });
   }
 
   function formatDate(d) {
