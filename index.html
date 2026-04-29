@@ -1032,7 +1032,7 @@
     // Chart: Platform breakdown
     const platforms = c.platform_breakdown;
     const platColors = { instagram: '#e1306c', facebook: '#1877f2' };
-    const platLabels = platforms.map(p => p.label);
+    const platLabels = platforms.map(p => (p.platform || p.label || '').charAt(0).toUpperCase() + (p.platform || p.label || '').slice(1));
     const platSpend  = platforms.map(p => p.spend);
     const platLeads  = platforms.map(p => p.leads);
     const platBgColors = platforms.map(p => platColors[p.platform] || '#4f6ef7');
@@ -1083,7 +1083,7 @@
     document.getElementById('platform-table-body').innerHTML = platforms.map(p => {
       const color = platColors[p.platform] || '#4f6ef7';
       return `<tr>
-        <td><span class="platform-badge"><span class="platform-dot" style="background:${color}"></span>${p.label}</span></td>
+        <td><span class="platform-badge"><span class="platform-dot" style="background:${color}"></span>${(p.platform||p.label||'').charAt(0).toUpperCase()+(p.platform||p.label||'').slice(1)}</span></td>
         <td>${fmt(p.impressions)}</td>
         <td>${fmt(p.reach)}</td>
         <td>${fmtPct(p.ctr_all)}</td>
