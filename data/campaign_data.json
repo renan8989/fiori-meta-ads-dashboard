@@ -4,29 +4,29 @@
     "name": "MICHEL - FIORI EMPREENDIMENTOS IMOBILIARIOS LTDA",
     "currency": "BRL"
   },
-  "last_updated": "2026-04-30T12:00:00-03:00",
+  "last_updated": "2026-05-04T09:04:31-03:00",
   "date_range": {
     "start": "2026-04-09",
-    "end": "2026-04-30"
+    "end": "2026-05-04"
   },
   "campaigns": [
     {
       "id": "120245166124370671",
       "name": "AX A562479 - NOVAS IMAGENS PRÓPRIAS OCEANA GOLF - BARRA - PDS - SOLUNA",
       "status": "PAUSED",
-      "impressions": 27456,
-      "reach": 12285,
-      "frequency": 2.235,
+      "impressions": 27458,
+      "reach": 12005,
+      "frequency": 2.287,
       "clicks_all": 584,
       "link_clicks": 382,
       "ctr_all": 2.127,
       "link_click_ctr": 1.391,
-      "spend": 1161.33,
+      "spend": 1161.35,
       "cpc_all": 1.989,
-      "cost_per_link_click": 3.040,
-      "cpm": 42.298,
+      "cost_per_link_click": 3.04,
+      "cpm": 42.296,
       "leads": 38,
-      "cost_per_lead": 30.561,
+      "cost_per_lead": 30.562,
       "gender_breakdown": [
         {
           "gender": "male",
@@ -35,9 +35,9 @@
           "frequency": 2.159,
           "clicks_all": 368,
           "link_clicks": 229,
-          "ctr_all": 2.270,
+          "ctr_all": 2.27,
           "link_click_ctr": 1.413,
-          "spend": 693.20,
+          "spend": 693.2,
           "cpc_all": 1.884,
           "cost_per_link_click": 3.027,
           "cpm": 42.763,
@@ -92,9 +92,9 @@
           "reach": 5139,
           "clicks_all": 267,
           "link_clicks": 171,
-          "ctr_all": 2.200,
+          "ctr_all": 2.2,
           "spend": 539.69,
-          "cpm": 44.470,
+          "cpm": 44.47,
           "leads": 16,
           "cost_per_lead": 33.731
         },
@@ -117,7 +117,7 @@
           "clicks_all": 13,
           "link_clicks": 11,
           "ctr_all": 1.658,
-          "spend": 47.80,
+          "spend": 47.8,
           "cpm": 60.969,
           "leads": 0,
           "cost_per_lead": null
@@ -158,7 +158,7 @@
           "spend": 1004.15,
           "cpm": 43.678,
           "leads": 32,
-          "cost_per_lead": 31.380
+          "cost_per_lead": 31.38
         }
       ],
       "weekly_breakdown": [
@@ -221,7 +221,7 @@
           "reach": 1167,
           "clicks_all": 20,
           "link_clicks": 14,
-          "ctr_all": 1.520,
+          "ctr_all": 1.52,
           "spend": 21.87,
           "cpm": 16.619,
           "leads": 0,
@@ -245,7 +245,7 @@
           "reach": 517,
           "clicks_all": 10,
           "link_clicks": 6,
-          "ctr_all": 1.600,
+          "ctr_all": 1.6,
           "spend": 15.04,
           "cpm": 24.064,
           "leads": 0,
